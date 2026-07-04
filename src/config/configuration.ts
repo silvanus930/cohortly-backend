@@ -8,6 +8,10 @@ export const appConfig = registerAs('app', () => ({
   name: process.env.APP_NAME ?? 'Cohortly',
   url: process.env.APP_URL ?? 'http://localhost:3000',
   corsOrigins: parseList(process.env.CORS_ORIGINS, ['*']),
+  throttle: {
+    ttlMs: parseInteger(process.env.THROTTLE_TTL_MS, 60000),
+    limit: parseInteger(process.env.THROTTLE_LIMIT, 120),
+  },
 }));
 
 export const databaseConfig = registerAs('database', () => ({

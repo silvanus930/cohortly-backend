@@ -16,6 +16,8 @@ export const envValidationSchema = Joi.object({
   APP_NAME: Joi.string().default('Cohortly'),
   APP_URL: Joi.string().uri().default('http://localhost:3000'),
   CORS_ORIGINS: Joi.string().default('*'),
+  THROTTLE_TTL_MS: Joi.number().integer().min(1000).default(60000),
+  THROTTLE_LIMIT: Joi.number().integer().min(1).default(120),
 
   DATABASE_URL: Joi.string()
     .uri({ scheme: ['postgres', 'postgresql'] })
