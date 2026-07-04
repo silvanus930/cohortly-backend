@@ -110,3 +110,63 @@ describe('UsersService', () => {
     });
   });
 });
+
+describe('UsersService role and status changes', () => {
+  let service: UsersService;
+  const repository = { findOne: jest.fn(), save: jest.fn((value: User) => Promise.resolve(value)) };
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    const moduleRef = await Test.createTestingModule({
+      providers: [UsersService, { provide: getRepositoryToken(User), useValue: repository }],
+    }).compile();
+    service = moduleRef.get(UsersService);
+  });
+
+  it('changes the role of an existing user', async () => {
+    repository.findOne.mockResolvedValue({ id: 'u1', role: UserRole.LEARNER });
+
+    const updated = await service.changeRole('u1', UserRole.INSTRUCTOR);
+
+    expect(updated.role).toBe(UserRole.INSTRUCTOR);
+    expect(repository.save).toHaveBeenCalledWith(
+      expect.objectContaining({ role: UserRole.INSTRUCTOR }),
+    );
+  });
+
+  it('suspends and reactivates users', async () => {
+    repository.findOne.mockResolvedValue({ id: 'u1', status: UserStatus.ACTIVE });
+
+    const suspended = await service.setStatus('u1', UserStatus.SUSPENDED);
+    expect(suspended.status).toBe(UserStatus.SUSPENDED);
+
+    const active = await service.setStatus('u1', UserStatus.ACTIVE);
+    expect(active.status).toBe(UserStatus.ACTIVE);
+  });
+
+  it('fails role changes for unknown users', async () => {
+    repository.findOne.mockResolvedValue(null);
+
+    await expect(service.changeRole('nope', UserRole.ADMIN)).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
+});
+
+describe('UsersService partial updates', () => {
+  it('ignores undefined fields so partial patches keep existing values', async () => {
+    const repository = {
+      findOne: jest.fn().mockResolvedValue({ id: 'u1', firstName: 'Ada', lastName: 'Lovelace' }),
+      save: jest.fn((value: User) => Promise.resolve(value)),
+    };
+    const moduleRef = await Test.createTestingModule({
+      providers: [UsersService, { provide: getRepositoryToken(User), useValue: repository }],
+    }).compile();
+    const service = moduleRef.get(UsersService);
+
+    const updated = await service.update('u1', { firstName: 'Augusta', lastName: undefined });
+
+    expect(updated.firstName).toBe('Augusta');
+    expect(updated.lastName).toBe('Lovelace');
+  });
+});

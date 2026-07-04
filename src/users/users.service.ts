@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserRole, UserStatus } from '../common/enums/user-role.enum';
 import { normalizeEmail } from '../common/utils/normalize-email';
+import { stripUndefined } from '../common/utils/strip-undefined';
 import { User } from './entities/user.entity';
 
 export interface CreateUserInput {
@@ -67,7 +68,19 @@ export class UsersService {
 
   async update(id: string, patch: UpdateUserInput): Promise<User> {
     const user = await this.findByIdOrFail(id);
-    Object.assign(user, patch);
+    Object.assign(user, stripUndefined(patch));
+    return this.users.save(user);
+  }
+
+  async changeRole(id: string, role: UserRole): Promise<User> {
+    const user = await this.findByIdOrFail(id);
+    user.role = role;
+    return this.users.save(user);
+  }
+
+  async setStatus(id: string, status: UserStatus): Promise<User> {
+    const user = await this.findByIdOrFail(id);
+    user.status = status;
     return this.users.save(user);
   }
 

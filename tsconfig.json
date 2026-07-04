@@ -17,6 +17,7 @@
     "incremental": false,
     "skipLibCheck": true,
     "strict": true,
+    "useDefineForClassFields": false,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
