@@ -1,4 +1,6 @@
 import { registerAs } from '@nestjs/config';
+import { authConfig } from '../auth/auth.config';
+import { mailConfig } from '../mail/mail.config';
 import { type NodeEnv } from './env.validation';
 import { parseBoolean, parseInteger, parseList } from './parsers';
 
@@ -20,4 +22,4 @@ export const databaseConfig = registerAs('database', () => ({
   logging: parseBoolean(process.env.DATABASE_LOGGING),
 }));
 
-export const configurationFactories = [appConfig, databaseConfig];
+export const configurationFactories = [appConfig, databaseConfig, authConfig, mailConfig];

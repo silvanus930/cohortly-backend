@@ -3,6 +3,8 @@ import Joi from 'joi';
 export const NODE_ENVS = ['development', 'test', 'production'] as const;
 export type NodeEnv = (typeof NODE_ENVS)[number];
 
+const optionalString = Joi.string().allow('').default('');
+
 /**
  * Every variable the application reads is declared here. Validation runs once
  * on boot so a misconfigured deployment fails fast with a readable message
@@ -24,4 +26,31 @@ export const envValidationSchema = Joi.object({
     .required(),
   DATABASE_SSL: Joi.boolean().default(false),
   DATABASE_LOGGING: Joi.boolean().default(false),
+
+  JWT_ACCESS_SECRET: Joi.string().min(32).required(),
+  JWT_ACCESS_TTL_SECONDS: Joi.number().integer().min(60).default(900),
+  JWT_REFRESH_TTL_DAYS: Joi.number().integer().min(1).default(30),
+  BCRYPT_ROUNDS: Joi.number().integer().min(4).max(15).default(12),
+  OTP_TTL_MINUTES: Joi.number().integer().min(1).default(10),
+  OTP_MAX_ATTEMPTS: Joi.number().integer().min(1).default(5),
+  GOOGLE_CLIENT_ID: optionalString,
+  SUPERADMIN_EMAIL: Joi.string()
+    .email({ tlds: { allow: false } })
+    .allow('')
+    .default(''),
+  SUPERADMIN_PASSWORD: optionalString,
+  SUPERADMIN_FIRST_NAME: Joi.string().default('Platform'),
+  SUPERADMIN_LAST_NAME: Joi.string().default('Owner'),
+
+  MAIL_TRANSPORT: Joi.string().valid('smtp', 'memory', 'log').default('log'),
+  MAIL_FROM: Joi.string().default('Cohortly <no-reply@cohortly.local>'),
+  SMTP_HOST: Joi.string().when('MAIL_TRANSPORT', {
+    is: 'smtp',
+    then: Joi.required(),
+    otherwise: optionalString,
+  }),
+  SMTP_PORT: Joi.number().port().default(587),
+  SMTP_SECURE: Joi.boolean().default(false),
+  SMTP_USER: optionalString,
+  SMTP_PASSWORD: optionalString,
 });
