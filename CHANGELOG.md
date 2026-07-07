@@ -17,3 +17,9 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   request logging interceptors with request ids.
 - Pagination helpers and a reusable pagination query DTO.
 - Rate limiting through `@nestjs/throttler`, configured from the environment.
+- Authentication: registration, login, Google ID token sign-in, refresh token
+  rotation with reuse detection, logout, OTP password reset, password change
+  and profile endpoints. Global JWT and roles guards with a `@Public()` opt-out.
+- Mail module wrapping Nodemailer with smtp, log and in-memory transports plus
+  welcome and password reset templates.
+- Superadmin account seeded from the environment on boot.
