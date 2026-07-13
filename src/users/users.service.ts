@@ -1,9 +1,12 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { UserRole, UserStatus } from '../common/enums/user-role.enum';
+import { type Paginated, paginateQuery } from '../common/pagination/pagination';
+import { containsPattern } from '../common/utils/escape-like';
 import { normalizeEmail } from '../common/utils/normalize-email';
 import { stripUndefined } from '../common/utils/strip-undefined';
+import { type ListUsersQueryDto } from './dto/list-users.query.dto';
 import { User } from './entities/user.entity';
 
 export interface CreateUserInput {
@@ -24,6 +27,21 @@ export type UpdateUserInput = Partial<
   >
 >;
 
+export interface UserAnalyticsSummary {
+  total: number;
+  byRole: Record<UserRole, number>;
+  byStatus: Record<UserStatus, number>;
+  newLast7Days: number;
+  newLast30Days: number;
+  activeLast30Days: number;
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function daysAgo(days: number): Date {
+  return new Date(Date.now() - days * DAY_MS);
+}
+
 @Injectable()
 export class UsersService {
   constructor(@InjectRepository(User) private readonly users: Repository<User>) {}
@@ -42,6 +60,26 @@ export class UsersService {
 
   findByEmail(email: string): Promise<User | null> {
     return this.users.findOne({ where: { email: normalizeEmail(email) } });
+  }
+
+  list(query: ListUsersQueryDto): Promise<Paginated<User>> {
+    const builder = this.users.createQueryBuilder('user');
+    if (query.search) {
+      builder.andWhere(
+        '(user.email ILIKE :search OR user.firstName ILIKE :search OR user.lastName ILIKE :search)',
+        { search: containsPattern(query.search) },
+      );
+    }
+    if (query.role) {
+      builder.andWhere('user.role = :role', { role: query.role });
+    }
+    if (query.status) {
+      builder.andWhere('user.status = :status', { status: query.status });
+    }
+    builder
+      .orderBy(`user.${query.sortBy}`, query.sortDir, 'NULLS LAST')
+      .addOrderBy('user.id', 'ASC');
+    return paginateQuery(builder, query);
   }
 
   async create(input: CreateUserInput): Promise<User> {
@@ -90,5 +128,48 @@ export class UsersService {
 
   count(): Promise<number> {
     return this.users.count();
+  }
+
+  async analyticsSummary(): Promise<UserAnalyticsSummary> {
+    const [total, roleRows, statusRows, newLast7Days, newLast30Days, activeLast30Days] =
+      await Promise.all([
+        this.users.count(),
+        this.countBy('role'),
+        this.countBy('status'),
+        this.users.count({ where: { createdAt: MoreThanOrEqual(daysAgo(7)) } }),
+        this.users.count({ where: { createdAt: MoreThanOrEqual(daysAgo(30)) } }),
+        this.users.count({ where: { lastLoginAt: MoreThanOrEqual(daysAgo(30)) } }),
+      ]);
+
+    return {
+      total,
+      byRole: this.fillCounts(Object.values(UserRole), roleRows),
+      byStatus: this.fillCounts(Object.values(UserStatus), statusRows),
+      newLast7Days,
+      newLast30Days,
+      activeLast30Days,
+    };
+  }
+
+  private countBy(column: 'role' | 'status'): Promise<{ key: string; count: string }[]> {
+    return this.users
+      .createQueryBuilder('user')
+      .select(`user.${column}`, 'key')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy(`user.${column}`)
+      .getRawMany<{ key: string; count: string }>();
+  }
+
+  private fillCounts<K extends string>(
+    keys: K[],
+    rows: { key: string; count: string }[],
+  ): Record<K, number> {
+    const result = Object.fromEntries(keys.map((key) => [key, 0])) as Record<K, number>;
+    for (const row of rows) {
+      if (row.key in result) {
+        result[row.key as K] = Number(row.count);
+      }
+    }
+    return result;
   }
 }

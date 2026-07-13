@@ -170,3 +170,85 @@ describe('UsersService partial updates', () => {
     expect(updated.lastName).toBe('Lovelace');
   });
 });
+
+describe('UsersService listing and analytics', () => {
+  const builder = {
+    andWhere: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    addOrderBy: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+    getManyAndCount: jest.fn().mockResolvedValue([[{ id: 'u1' }], 1]),
+    select: jest.fn().mockReturnThis(),
+    addSelect: jest.fn().mockReturnThis(),
+    groupBy: jest.fn().mockReturnThis(),
+    getRawMany: jest.fn(),
+  };
+  const repository = { createQueryBuilder: jest.fn(() => builder), count: jest.fn() };
+  let service: UsersService;
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    const moduleRef = await Test.createTestingModule({
+      providers: [UsersService, { provide: getRepositoryToken(User), useValue: repository }],
+    }).compile();
+    service = moduleRef.get(UsersService);
+  });
+
+  it('applies search, role and status filters with escaped wildcards', async () => {
+    const result = await service.list({
+      page: 2,
+      limit: 10,
+      search: '50%',
+      role: UserRole.ADMIN,
+      status: UserStatus.ACTIVE,
+      sortBy: 'email',
+      sortDir: 'ASC',
+    });
+
+    expect(builder.andWhere).toHaveBeenCalledWith(expect.stringContaining('ILIKE :search'), {
+      search: '%50\\%%',
+    });
+    expect(builder.andWhere).toHaveBeenCalledWith('user.role = :role', { role: UserRole.ADMIN });
+    expect(builder.andWhere).toHaveBeenCalledWith('user.status = :status', {
+      status: UserStatus.ACTIVE,
+    });
+    expect(builder.orderBy).toHaveBeenCalledWith('user.email', 'ASC', 'NULLS LAST');
+    expect(builder.skip).toHaveBeenCalledWith(10);
+    expect(result.meta.total).toBe(1);
+  });
+
+  it('skips optional filters when absent', async () => {
+    await service.list({ page: 1, limit: 20, sortBy: 'createdAt', sortDir: 'DESC' });
+
+    expect(builder.andWhere).not.toHaveBeenCalled();
+  });
+
+  it('fills every role and status bucket in the analytics summary', async () => {
+    repository.count
+      .mockResolvedValueOnce(12)
+      .mockResolvedValueOnce(3)
+      .mockResolvedValueOnce(7)
+      .mockResolvedValueOnce(5);
+    builder.getRawMany
+      .mockResolvedValueOnce([
+        { key: 'LEARNER', count: '10' },
+        { key: 'ADMIN', count: '2' },
+      ])
+      .mockResolvedValueOnce([{ key: 'ACTIVE', count: '12' }]);
+
+    const summary = await service.analyticsSummary();
+
+    expect(summary.total).toBe(12);
+    expect(summary.byRole).toEqual({
+      SUPERADMIN: 0,
+      ADMIN: 2,
+      INSTRUCTOR: 0,
+      LEARNER: 10,
+      ORG_ADMIN: 0,
+      PARTNER: 0,
+    });
+    expect(summary.byStatus).toEqual({ ACTIVE: 12, SUSPENDED: 0 });
+    expect(summary).toMatchObject({ newLast7Days: 3, newLast30Days: 7, activeLast30Days: 5 });
+  });
+});
