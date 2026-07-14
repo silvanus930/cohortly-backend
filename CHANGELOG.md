@@ -23,3 +23,5 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Mail module wrapping Nodemailer with smtp, log and in-memory transports plus
   welcome and password reset templates.
 - Superadmin account seeded from the environment on boot.
+- Admin user management: filtered, paginated listing, role changes with
+  superadmin safeguards, activation and suspension, and an analytics summary.
