@@ -9,6 +9,7 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ResponseEnvelopeInterceptor } from './common/interceptors/response-envelope.interceptor';
 import { AppConfigModule } from './config/config.module';
+import { CoursesModule } from './courses/courses.module';
 import { appConfig } from './config/configuration';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
@@ -28,6 +29,7 @@ import { UsersModule } from './users/users.module';
     MailModule,
     UsersModule,
     AuthModule,
+    CoursesModule,
     HealthModule,
   ],
   providers: [

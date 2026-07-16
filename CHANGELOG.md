@@ -25,3 +25,7 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Superadmin account seeded from the environment on boot.
 - Admin user management: filtered, paginated listing, role changes with
   superadmin safeguards, activation and suspension, and an analytics summary.
+- Course catalog data model: categories, courses, modules, lessons, materials
+  and FAQs with migrations.
+- Category management and the instructor and admin course authoring surface:
+  create, update, archive and delete drafts with ownership checks.
