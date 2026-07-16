@@ -79,6 +79,25 @@ export class CoursesController {
     return toCourseSummary(await this.coursesService.archive(actor, id));
   }
 
+  @Post(':id/publish')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Publish a course that has at least one lesson' })
+  async publish(
+    @CurrentUser() actor: User,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<CourseSummaryDto> {
+    return toCourseSummary(await this.coursesService.publish(actor, id));
+  }
+
+  @Post(':id/unpublish')
+  @HttpCode(HttpStatus.OK)
+  async unpublish(
+    @CurrentUser() actor: User,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<CourseSummaryDto> {
+    return toCourseSummary(await this.coursesService.unpublish(actor, id));
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@CurrentUser() actor: User, @Param('id', ParseUUIDPipe) id: string): Promise<void> {

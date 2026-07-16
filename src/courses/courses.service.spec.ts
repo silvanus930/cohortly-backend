@@ -7,6 +7,7 @@ import { UsersService } from '../users/users.service';
 import { CategoriesService } from './categories.service';
 import { CoursesService, isCourseStaff } from './courses.service';
 import { Course } from './entities/course.entity';
+import { Lesson } from './entities/lesson.entity';
 import { CoursePricing, CourseStatus } from './enums/course.enums';
 
 const instructor = { id: 'ins-1', role: UserRole.INSTRUCTOR } as User;
@@ -24,6 +25,7 @@ export function fakeCourse(overrides: Partial<Course> = {}): Course {
     priceCents: 0,
     currency: 'USD',
     status: CourseStatus.DRAFT,
+    publishedAt: null,
     tags: [],
     enrollmentCount: 0,
     instructorId: 'ins-1',
@@ -42,6 +44,7 @@ describe('CoursesService', () => {
     remove: jest.fn(),
     createQueryBuilder: jest.fn(),
   };
+  const lessonsRepository = { count: jest.fn() };
   const categoriesService = { findByIdOrFail: jest.fn() };
   const usersService = { findByIdOrFail: jest.fn() };
 
@@ -52,6 +55,7 @@ describe('CoursesService', () => {
       providers: [
         CoursesService,
         { provide: getRepositoryToken(Course), useValue: repository },
+        { provide: getRepositoryToken(Lesson), useValue: lessonsRepository },
         { provide: CategoriesService, useValue: categoriesService },
         { provide: UsersService, useValue: usersService },
       ],
@@ -164,6 +168,48 @@ describe('CoursesService', () => {
     repository.findOne.mockResolvedValue(fakeCourse());
     await service.remove(instructor, 'course-1');
     expect(repository.remove).toHaveBeenCalled();
+  });
+
+  it('publishes only courses with lessons and stamps the first publish time', async () => {
+    repository.findOne.mockResolvedValue(fakeCourse());
+    lessonsRepository.count.mockResolvedValueOnce(0);
+    await expect(service.publish(instructor, 'course-1')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+
+    lessonsRepository.count.mockResolvedValueOnce(3);
+    await service.publish(instructor, 'course-1');
+    expect(repository.save).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: CourseStatus.PUBLISHED,
+        publishedAt: expect.any(Date) as Date,
+      }),
+    );
+  });
+
+  it('keeps the original publish time when republishing', async () => {
+    const firstPublish = new Date('2024-01-01T00:00:00Z');
+    repository.findOne.mockResolvedValue(fakeCourse({ publishedAt: firstPublish }));
+    lessonsRepository.count.mockResolvedValue(1);
+
+    await service.publish(instructor, 'course-1');
+
+    expect(repository.save).toHaveBeenCalledWith(
+      expect.objectContaining({ publishedAt: firstPublish }),
+    );
+  });
+
+  it('unpublishes published courses back to draft', async () => {
+    repository.findOne.mockResolvedValue(fakeCourse({ status: CourseStatus.PUBLISHED }));
+    await service.unpublish(instructor, 'course-1');
+    expect(repository.save).toHaveBeenCalledWith(
+      expect.objectContaining({ status: CourseStatus.DRAFT }),
+    );
+
+    repository.findOne.mockResolvedValue(fakeCourse());
+    await expect(service.unpublish(instructor, 'course-1')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
   });
 
   it('scopes managed listings to the instructor unless the actor is staff', async () => {

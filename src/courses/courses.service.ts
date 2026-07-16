@@ -16,6 +16,7 @@ import { UsersService } from '../users/users.service';
 import { CategoriesService } from './categories.service';
 import { CreateCourseDto, ListManagedCoursesQueryDto, UpdateCourseDto } from './dto/course.dto';
 import { Course } from './entities/course.entity';
+import { Lesson } from './entities/lesson.entity';
 import { CoursePricing, CourseStatus } from './enums/course.enums';
 
 export const STAFF_COURSE_ROLES: readonly UserRole[] = [UserRole.SUPERADMIN, UserRole.ADMIN];
@@ -28,6 +29,7 @@ export function isCourseStaff(user: Pick<User, 'role'>): boolean {
 export class CoursesService {
   constructor(
     @InjectRepository(Course) private readonly courses: Repository<Course>,
+    @InjectRepository(Lesson) private readonly lessons: Repository<Lesson>,
     private readonly categoriesService: CategoriesService,
     private readonly usersService: UsersService,
   ) {}
@@ -154,6 +156,37 @@ export class CoursesService {
       throw new BadRequestException('Only unpublished courses without enrollments can be deleted');
     }
     await this.courses.remove(course);
+  }
+
+  /** A course needs at least one lesson before learners can see it. */
+  async publish(actor: User, id: string): Promise<Course> {
+    const course = await this.findByIdOrFail(id);
+    this.assertCanManage(actor, course);
+    if (course.status === CourseStatus.PUBLISHED) {
+      return course;
+    }
+    const lessonCount = await this.lessons.count({ where: { courseId: id } });
+    if (lessonCount === 0) {
+      throw new BadRequestException('Add at least one lesson before publishing');
+    }
+    if (course.pricing === CoursePricing.PAID && course.priceCents <= 0) {
+      throw new BadRequestException('Paid courses need a price before publishing');
+    }
+    course.status = CourseStatus.PUBLISHED;
+    course.publishedAt = course.publishedAt ?? new Date();
+    await this.courses.save(course);
+    return this.findByIdOrFail(id);
+  }
+
+  async unpublish(actor: User, id: string): Promise<Course> {
+    const course = await this.findByIdOrFail(id);
+    this.assertCanManage(actor, course);
+    if (course.status !== CourseStatus.PUBLISHED) {
+      throw new BadRequestException('Only published courses can be unpublished');
+    }
+    course.status = CourseStatus.DRAFT;
+    await this.courses.save(course);
+    return this.findByIdOrFail(id);
   }
 
   private async resolveInstructor(actor: User, requested?: string): Promise<string> {
