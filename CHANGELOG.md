@@ -29,3 +29,5 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and FAQs with migrations.
 - Category management and the instructor and admin course authoring surface:
   create, update, archive and delete drafts with ownership checks.
+- Curriculum authoring: modules and lessons with reordering, dense
+  positions, automatic course duration and the publish/unpublish flow.
