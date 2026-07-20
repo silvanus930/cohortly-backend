@@ -53,4 +53,14 @@ export const envValidationSchema = Joi.object({
   SMTP_SECURE: Joi.boolean().default(false),
   SMTP_USER: optionalString,
   SMTP_PASSWORD: optionalString,
+
+  STORAGE_ENDPOINT: Joi.string().uri().allow('').default(''),
+  STORAGE_REGION: Joi.string().default('us-east-1'),
+  STORAGE_BUCKET: optionalString,
+  STORAGE_ACCESS_KEY_ID: optionalString,
+  STORAGE_SECRET_ACCESS_KEY: optionalString,
+  STORAGE_PUBLIC_URL: Joi.string().uri().allow('').default(''),
+  STORAGE_FORCE_PATH_STYLE: Joi.boolean().default(true),
+  STORAGE_PRESIGN_TTL_SECONDS: Joi.number().integer().min(60).max(86400).default(900),
+  STORAGE_MAX_UPLOAD_MB: Joi.number().integer().min(1).default(500),
 });
