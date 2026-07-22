@@ -14,6 +14,7 @@ import { appConfig } from './config/configuration';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
+import { StorageModule } from './storage/storage.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -27,6 +28,7 @@ import { UsersModule } from './users/users.module';
       }),
     }),
     MailModule,
+    StorageModule,
     UsersModule,
     AuthModule,
     CoursesModule,
