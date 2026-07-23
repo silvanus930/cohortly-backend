@@ -31,3 +31,5 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   create, update, archive and delete drafts with ownership checks.
 - Curriculum authoring: modules and lessons with reordering, dense
   positions, automatic course duration and the publish/unpublish flow.
+- S3 compatible storage service issuing presigned PUT uploads with MIME and
+  size validation, plus cover images, lesson materials and course FAQs.

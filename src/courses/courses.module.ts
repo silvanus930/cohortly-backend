@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '../users/users.module';
 import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
+import { CourseAssetsController } from './course-assets.controller';
+import { CourseAssetsService } from './course-assets.service';
 import { CoursesController } from './courses.controller';
 import { CoursesService } from './courses.service';
 import { CurriculumController } from './curriculum.controller';
@@ -19,8 +21,13 @@ import { Lesson } from './entities/lesson.entity';
     TypeOrmModule.forFeature([Category, Course, CourseModule, Lesson, LessonMaterial, CourseFaq]),
     UsersModule,
   ],
-  controllers: [CategoriesController, CoursesController, CurriculumController],
-  providers: [CategoriesService, CoursesService, CurriculumService],
+  controllers: [
+    CategoriesController,
+    CoursesController,
+    CurriculumController,
+    CourseAssetsController,
+  ],
+  providers: [CategoriesService, CoursesService, CurriculumService, CourseAssetsService],
   exports: [CoursesService, CategoriesService, TypeOrmModule],
 })
 export class CoursesModule {}
