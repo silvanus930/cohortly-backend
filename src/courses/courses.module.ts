@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '../users/users.module';
 import { CategoriesController } from './categories.controller';
+import { CatalogController } from './catalog.controller';
+import { CatalogService } from './catalog.service';
 import { CategoriesService } from './categories.service';
 import { CourseAssetsController } from './course-assets.controller';
 import { CourseAssetsService } from './course-assets.service';
@@ -26,8 +28,15 @@ import { Lesson } from './entities/lesson.entity';
     CoursesController,
     CurriculumController,
     CourseAssetsController,
+    CatalogController,
   ],
-  providers: [CategoriesService, CoursesService, CurriculumService, CourseAssetsService],
-  exports: [CoursesService, CategoriesService, TypeOrmModule],
+  providers: [
+    CategoriesService,
+    CoursesService,
+    CurriculumService,
+    CourseAssetsService,
+    CatalogService,
+  ],
+  exports: [CoursesService, CategoriesService, CatalogService, CurriculumService, TypeOrmModule],
 })
 export class CoursesModule {}

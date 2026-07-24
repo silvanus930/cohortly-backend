@@ -33,3 +33,6 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   positions, automatic course duration and the publish/unpublish flow.
 - S3 compatible storage service issuing presigned PUT uploads with MIME and
   size validation, plus cover images, lesson materials and course FAQs.
+- Public catalog with search, category, level, pricing and tag filters,
+  sorting, course detail pages that hide lesson content from non enrolled
+  viewers, and popularity based recommendations.
