@@ -5,6 +5,7 @@ import { appConfig } from '../config/configuration';
 import { type User } from '../users/entities/user.entity';
 import { mailConfig } from './mail.config';
 import { passwordResetEmail, welcomeEmail } from './templates/account.templates';
+import { organizationInviteEmail } from './templates/organization.templates';
 import { type RenderedEmail } from './templates/layout';
 
 export interface SentMail extends RenderedEmail {
@@ -72,6 +73,25 @@ export class MailService implements OnModuleDestroy {
     return this.send(
       user.email,
       passwordResetEmail(this.app.name, user.firstName, code, ttlMinutes),
+    );
+  }
+
+  sendOrganizationInvite(
+    to: string,
+    organizationName: string,
+    inviterName: string,
+    acceptUrl: string,
+    expiresInDays: number,
+  ): Promise<void> {
+    return this.send(
+      to,
+      organizationInviteEmail(
+        this.app.name,
+        organizationName,
+        inviterName,
+        acceptUrl,
+        expiresInDays,
+      ),
     );
   }
 }
