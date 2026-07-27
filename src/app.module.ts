@@ -14,6 +14,7 @@ import { appConfig } from './config/configuration';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
+import { OrganizationsModule } from './organizations/organizations.module';
 import { StorageModule } from './storage/storage.module';
 import { UsersModule } from './users/users.module';
 
@@ -32,6 +33,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     AuthModule,
     CoursesModule,
+    OrganizationsModule,
     HealthModule,
   ],
   providers: [

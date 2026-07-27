@@ -36,3 +36,6 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Public catalog with search, category, level, pricing and tag filters,
   sorting, course detail pages that hide lesson content from non enrolled
   viewers, and popularity based recommendations.
+- Organizations: creation with an owning org admin, email invitations with
+  single use tokens, membership management, manually granted seat packs,
+  seat assignment to members per course and a seat usage dashboard.
