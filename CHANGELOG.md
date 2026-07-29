@@ -39,3 +39,6 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Organizations: creation with an owning org admin, email invitations with
   single use tokens, membership management, manually granted seat packs,
   seat assignment to members per course and a seat usage dashboard.
+- Cohorts: scheduled runs of a course with capacity, live session schedule,
+  join and leave with an automatic waitlist that promotes the next learner,
+  rosters, attendance marking and per learner attendance summaries.

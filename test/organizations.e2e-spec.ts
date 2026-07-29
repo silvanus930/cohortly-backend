@@ -1,39 +1,12 @@
 import { type NestExpressApplication } from '@nestjs/platform-express';
 import { UserRole } from '../src/common/enums/user-role.enum';
 import { MailService } from '../src/mail/mail.service';
+import { publishCourse } from './utils/courses';
 import { api, bearer, createUserSession, type TestSession } from './utils/auth';
 import { createTestApp, resetDatabase } from './utils/test-app';
 
 interface IdHolder {
   id: string;
-}
-
-export async function publishCourse(
-  app: NestExpressApplication,
-  instructor: TestSession,
-  title: string,
-): Promise<string> {
-  const course = await api(app)
-    .post('/api/v1/manage/courses')
-    .set(bearer(instructor.accessToken))
-    .send({ title, summary: 'A published course used by the e2e suites' })
-    .expect(201);
-  const courseId = (course.body.data as IdHolder).id;
-  const module = await api(app)
-    .post(`/api/v1/manage/courses/${courseId}/modules`)
-    .set(bearer(instructor.accessToken))
-    .send({ title: 'Module' })
-    .expect(201);
-  await api(app)
-    .post(`/api/v1/manage/modules/${(module.body.data as IdHolder).id}/lessons`)
-    .set(bearer(instructor.accessToken))
-    .send({ title: 'Lesson', type: 'READING', body: 'Hello', durationMinutes: 5 })
-    .expect(201);
-  await api(app)
-    .post(`/api/v1/manage/courses/${courseId}/publish`)
-    .set(bearer(instructor.accessToken))
-    .expect(200);
-  return courseId;
 }
 
 describe('Organizations (e2e)', () => {
@@ -56,7 +29,7 @@ describe('Organizations (e2e)', () => {
     learner = await createUserSession(app, { firstName: 'Lars', lastName: 'Learner' });
     outsider = await createUserSession(app);
     instructor = await createUserSession(app, { role: UserRole.INSTRUCTOR });
-    courseId = await publishCourse(app, instructor, 'Org Seat Course');
+    courseId = (await publishCourse(app, instructor, 'Org Seat Course')).courseId;
   });
 
   afterAll(async () => {
