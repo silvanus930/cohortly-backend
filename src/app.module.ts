@@ -13,6 +13,7 @@ import { AppConfigModule } from './config/config.module';
 import { CoursesModule } from './courses/courses.module';
 import { appConfig } from './config/configuration';
 import { DatabaseModule } from './database/database.module';
+import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
 import { OrganizationsModule } from './organizations/organizations.module';
@@ -36,6 +37,7 @@ import { UsersModule } from './users/users.module';
     CoursesModule,
     OrganizationsModule,
     CohortsModule,
+    EnrollmentsModule,
     HealthModule,
   ],
   providers: [

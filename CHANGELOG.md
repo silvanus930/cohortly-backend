@@ -42,3 +42,7 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Cohorts: scheduled runs of a course with capacity, live session schedule,
   join and leave with an automatic waitlist that promotes the next learner,
   rosters, attendance marking and per learner attendance summaries.
+- Enrollments: free, seat based and purchase based enrollment with cohort
+  joining, per lesson progress with playback position, course progress
+  rollups that complete the enrollment, continue learning, in progress and
+  completed lists, learning streaks and an instructor roster view.

@@ -24,6 +24,13 @@ describe('Cohorts (e2e)', () => {
     learnerA = await createUserSession(app, { firstName: 'Ann', lastName: 'A' });
     learnerB = await createUserSession(app, { firstName: 'Ben', lastName: 'B' });
     courseId = (await publishCourse(app, instructor, 'Cohort Course')).courseId;
+    for (const learner of [learnerA, learnerB]) {
+      await api(app)
+        .post('/api/v1/enrollments')
+        .set(bearer(learner.accessToken))
+        .send({ courseId })
+        .expect(201);
+    }
   });
 
   afterAll(async () => {
