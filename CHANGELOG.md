@@ -46,3 +46,6 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   joining, per lesson progress with playback position, course progress
   rollups that complete the enrollment, continue learning, in progress and
   completed lists, learning streaks and an instructor roster view.
+- Quizzes: JSON question banks on QUIZ lessons with single, multiple and
+  true/false questions, automatic grading, attempt limits, and gating that
+  keeps the next lesson locked until the quiz is passed.

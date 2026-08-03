@@ -17,6 +17,7 @@ import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
 import { OrganizationsModule } from './organizations/organizations.module';
+import { QuizzesModule } from './quizzes/quizzes.module';
 import { StorageModule } from './storage/storage.module';
 import { UsersModule } from './users/users.module';
 
@@ -38,6 +39,7 @@ import { UsersModule } from './users/users.module';
     OrganizationsModule,
     CohortsModule,
     EnrollmentsModule,
+    QuizzesModule,
     HealthModule,
   ],
   providers: [
