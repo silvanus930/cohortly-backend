@@ -5,6 +5,11 @@ import { appConfig } from '../config/configuration';
 import { type User } from '../users/entities/user.entity';
 import { mailConfig } from './mail.config';
 import { passwordResetEmail, welcomeEmail } from './templates/account.templates';
+import {
+  certificateIssuedEmail,
+  gradePostedEmail,
+  payoutThresholdEmail,
+} from './templates/activity.templates';
 import { organizationInviteEmail } from './templates/organization.templates';
 import { type RenderedEmail } from './templates/layout';
 
@@ -91,6 +96,58 @@ export class MailService implements OnModuleDestroy {
         inviterName,
         acceptUrl,
         expiresInDays,
+      ),
+    );
+  }
+
+  sendGradePosted(
+    user: User,
+    assignmentTitle: string,
+    courseTitle: string,
+    score: number,
+    maxPoints: number,
+    passed: boolean,
+    courseUrl: string,
+  ): Promise<void> {
+    return this.send(
+      user.email,
+      gradePostedEmail(
+        this.app.name,
+        user.firstName,
+        assignmentTitle,
+        courseTitle,
+        score,
+        maxPoints,
+        passed,
+        courseUrl,
+      ),
+    );
+  }
+
+  sendCertificateIssued(user: User, courseTitle: string, verifyUrl: string): Promise<void> {
+    return this.send(
+      user.email,
+      certificateIssuedEmail(this.app.name, user.firstName, courseTitle, verifyUrl),
+    );
+  }
+
+  sendPayoutThreshold(
+    to: string,
+    partnerName: string,
+    amountCents: number,
+    currency: string,
+    thresholdCents: number,
+    dashboardUrl: string,
+  ): Promise<void> {
+    return this.send(
+      to,
+      payoutThresholdEmail(
+        this.app.name,
+        partnerName,
+        amountCents,
+        currency,
+        thresholdCents,
+        dashboardUrl,
       ),
     );
   }
