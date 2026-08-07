@@ -49,3 +49,5 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Quizzes: JSON question banks on QUIZ lessons with single, multiple and
   true/false questions, automatic grading, attempt limits, and gating that
   keeps the next lesson locked until the quiz is passed.
+- In-app notifications inbox with unread counts and read tracking, plus email
+  templates for posted grades, issued certificates and payout thresholds.

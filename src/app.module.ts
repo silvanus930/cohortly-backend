@@ -16,6 +16,7 @@ import { DatabaseModule } from './database/database.module';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
 import { StorageModule } from './storage/storage.module';
@@ -33,6 +34,7 @@ import { UsersModule } from './users/users.module';
     }),
     MailModule,
     StorageModule,
+    NotificationsModule,
     UsersModule,
     AuthModule,
     CoursesModule,
