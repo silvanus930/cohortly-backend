@@ -51,3 +51,7 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   keeps the next lesson locked until the quiz is passed.
 - In-app notifications inbox with unread counts and read tracking, plus email
   templates for posted grades, issued certificates and payout thresholds.
+- Assignments: rubric based assignments on ASSIGNMENT lessons, text or file
+  submissions with presigned uploads, instructor grading with per criterion
+  scores and feedback, resubmission of returned work, grade notifications and
+  a per cohort gradebook covering assignments and quizzes.
