@@ -50,8 +50,7 @@ describe('NotificationsService', () => {
     const warn = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
     repository.save.mockRejectedValueOnce(new Error('db down'));
 
-    service.notify('u1', { type: NotificationType.GENERIC, title: 't', body: 'b' });
-    await new Promise((resolve) => setImmediate(resolve));
+    await service.notify('u1', { type: NotificationType.GENERIC, title: 't', body: 'b' });
 
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('db down'));
     warn.mockRestore();

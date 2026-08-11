@@ -38,11 +38,13 @@ export class NotificationsService {
     );
   }
 
-  /** Fire and forget variant for callers that must not fail on inbox errors. */
-  notify(userId: string, input: NotificationInput): void {
-    this.create(userId, input).catch((error: unknown) => {
-      this.logger.warn(`Could not store notification for ${userId}: ${String(error)}`);
-    });
+  /** Never rejects, for callers whose own flow must not fail on inbox errors. */
+  notify(userId: string, input: NotificationInput): Promise<void> {
+    return this.create(userId, input)
+      .then(() => undefined)
+      .catch((error: unknown) => {
+        this.logger.warn(`Could not store notification for ${userId}: ${String(error)}`);
+      });
   }
 
   listMine(user: User, query: ListNotificationsQueryDto): Promise<Paginated<Notification>> {
