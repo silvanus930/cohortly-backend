@@ -158,3 +158,28 @@ describe('StorageController', () => {
     );
   });
 });
+
+describe('StorageService.putObject', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('uploads server generated objects and returns the public url', async () => {
+    const service = await build();
+    send.mockResolvedValueOnce({});
+
+    const url = await service.putObject('certificates/x.svg', '<svg/>', 'image/svg+xml');
+
+    expect(url).toBe('https://minio.local:9000/cohortly/certificates/x.svg');
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: expect.objectContaining({ Key: 'certificates/x.svg', ContentType: 'image/svg+xml' }),
+      }),
+    );
+  });
+
+  it('returns null without calling the store when unconfigured', async () => {
+    const service = await build({ bucket: '' });
+
+    await expect(service.putObject('k', 'body', 'text/plain')).resolves.toBeNull();
+    expect(send).not.toHaveBeenCalled();
+  });
+});

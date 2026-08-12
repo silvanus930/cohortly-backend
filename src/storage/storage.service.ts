@@ -151,6 +151,22 @@ export class StorageService {
     };
   }
 
+  /** Uploads a small server generated object such as a rendered certificate. */
+  async putObject(key: string, body: string | Buffer, contentType: string): Promise<string | null> {
+    if (!this.isConfigured) {
+      return null;
+    }
+    await this.client.send(
+      new PutObjectCommand({
+        Bucket: this.config.bucket,
+        Key: key,
+        Body: body,
+        ContentType: contentType,
+      }),
+    );
+    return this.publicUrl(key);
+  }
+
   /** Best effort removal; a missing object or outage must not fail the caller. */
   async deleteObject(key: string): Promise<boolean> {
     if (!this.isConfigured) {
