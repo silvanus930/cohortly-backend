@@ -4,6 +4,7 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AssignmentsModule } from './assignments/assignments.module';
 import { AuthModule } from './auth/auth.module';
+import { CertificatesModule } from './certificates/certificates.module';
 import { CohortsModule } from './cohorts/cohorts.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
@@ -44,6 +45,7 @@ import { UsersModule } from './users/users.module';
     EnrollmentsModule,
     QuizzesModule,
     AssignmentsModule,
+    CertificatesModule,
     HealthModule,
   ],
   providers: [

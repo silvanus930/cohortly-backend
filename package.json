@@ -25,7 +25,8 @@
     "migration:generate": "npm run typeorm -- migration:generate",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
-    "prepare": "husky"
+    "prepare": "husky",
+    "certificates:reissue": "ts-node -r tsconfig-paths/register scripts/reissue-certificates.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1125.0",

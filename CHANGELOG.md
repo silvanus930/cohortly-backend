@@ -55,3 +55,7 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   submissions with presigned uploads, instructor grading with per criterion
   scores and feedback, resubmission of returned work, grade notifications and
   a per cohort gradebook covering assignments and quizzes.
+- Certificates: issued automatically on course completion with a unique
+  verification code, rendered from an SVG template into storage, public
+  verification and SVG endpoints, admin revocation and reissue, and a CLI
+  that re-renders certificates with the current template.
