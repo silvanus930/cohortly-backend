@@ -63,4 +63,12 @@ export const envValidationSchema = Joi.object({
   STORAGE_FORCE_PATH_STYLE: Joi.boolean().default(true),
   STORAGE_PRESIGN_TTL_SECONDS: Joi.number().integer().min(60).max(86400).default(900),
   STORAGE_MAX_UPLOAD_MB: Joi.number().integer().min(1).default(500),
+
+  STRIPE_SECRET_KEY: optionalString,
+  STRIPE_WEBHOOK_SECRET: optionalString,
+  STRIPE_SUCCESS_URL: Joi.string().uri().default('http://localhost:5173/checkout/success'),
+  STRIPE_CANCEL_URL: Joi.string().uri().default('http://localhost:5173/checkout/cancel'),
+  PAYMENTS_CURRENCY: Joi.string().length(3).uppercase().default('USD'),
+  SEAT_PRICE_CENTS: Joi.number().integer().min(0).default(19900),
+  MAX_BUNDLE_SIZE: Joi.number().integer().min(2).max(50).default(10),
 });

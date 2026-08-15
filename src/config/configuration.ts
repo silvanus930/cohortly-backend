@@ -1,6 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import { authConfig } from '../auth/auth.config';
 import { mailConfig } from '../mail/mail.config';
+import { paymentsConfig } from '../payments/payments.config';
 import { storageConfig } from '../storage/storage.config';
 import { type NodeEnv } from './env.validation';
 import { parseBoolean, parseInteger, parseList } from './parsers';
@@ -29,4 +30,5 @@ export const configurationFactories = [
   authConfig,
   mailConfig,
   storageConfig,
+  paymentsConfig,
 ];
