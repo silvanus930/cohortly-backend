@@ -245,6 +245,12 @@ export class OrganizationsService {
     );
   }
 
+  /** Removes seat packs that came from a purchase which was later refunded. */
+  async removeSeatPacksByPurchase(purchaseId: string): Promise<number> {
+    const result = await this.seatPacks.delete({ purchaseId });
+    return result.affected ?? 0;
+  }
+
   async listSeatPacks(actor: User, organizationId: string): Promise<SeatPack[]> {
     await this.requireManage(actor, organizationId);
     return this.seatPacks.find({ where: { organizationId }, order: { createdAt: 'DESC' } });

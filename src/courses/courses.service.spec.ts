@@ -239,3 +239,23 @@ describe('CoursesService', () => {
     });
   });
 });
+
+describe('CoursesService bulk lookup', () => {
+  it('loads several courses by id and short circuits empty input', async () => {
+    const repository = { find: jest.fn().mockResolvedValue([{ id: 'a' }, { id: 'b' }]) };
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        CoursesService,
+        { provide: getRepositoryToken(Course), useValue: repository },
+        { provide: getRepositoryToken(Lesson), useValue: {} },
+        { provide: CategoriesService, useValue: {} },
+        { provide: UsersService, useValue: {} },
+      ],
+    }).compile();
+    const service = moduleRef.get(CoursesService);
+
+    await expect(service.findManyByIds(['a', 'b'])).resolves.toHaveLength(2);
+    await expect(service.findManyByIds([])).resolves.toEqual([]);
+    expect(repository.find).toHaveBeenCalledTimes(1);
+  });
+});

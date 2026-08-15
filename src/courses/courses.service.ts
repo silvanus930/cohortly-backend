@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { UserRole } from '../common/enums/user-role.enum';
 import { type Paginated, paginateQuery } from '../common/pagination/pagination';
 import { containsPattern } from '../common/utils/escape-like';
@@ -51,6 +51,13 @@ export class CoursesService {
       throw new NotFoundException(`Course ${id} was not found`);
     }
     return course;
+  }
+
+  findManyByIds(ids: string[]): Promise<Course[]> {
+    if (ids.length === 0) {
+      return Promise.resolve([]);
+    }
+    return this.courses.find({ where: { id: In(ids) } });
   }
 
   async findManaged(actor: User, id: string): Promise<Course> {

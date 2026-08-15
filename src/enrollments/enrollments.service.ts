@@ -143,6 +143,20 @@ export class EnrollmentsService {
     return enrollment;
   }
 
+  /** Cancels every active enrollment granted by a refunded purchase. */
+  async cancelByPurchase(purchaseId: string): Promise<number> {
+    const rows = await this.enrollments.find({
+      where: { purchaseId, status: EnrollmentStatus.ACTIVE },
+    });
+    for (const enrollment of rows) {
+      enrollment.status = EnrollmentStatus.CANCELLED;
+      enrollment.cancelledAt = new Date();
+      await this.enrollments.save(enrollment);
+      await this.courses.decrement({ id: enrollment.courseId }, 'enrollmentCount', 1);
+    }
+    return rows.length;
+  }
+
   async findByIdOrFail(id: string): Promise<Enrollment> {
     const enrollment = await this.enrollments.findOne({
       where: { id },

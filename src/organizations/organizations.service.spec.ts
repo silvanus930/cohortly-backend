@@ -337,3 +337,27 @@ describe('OrganizationsService', () => {
     expect(dashboard.courses).toEqual([{ courseId: 'c1', title: 'TS', seatsUsed: 1 }]);
   });
 });
+
+describe('OrganizationsService purchased seat packs', () => {
+  it('removes every seat pack that came from a refunded purchase', async () => {
+    const seatPacks = { delete: jest.fn().mockResolvedValue({ affected: 2 }) };
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        OrganizationsService,
+        { provide: getRepositoryToken(Organization), useValue: {} },
+        { provide: getRepositoryToken(OrganizationMembership), useValue: {} },
+        { provide: getRepositoryToken(SeatPack), useValue: seatPacks },
+        { provide: getRepositoryToken(SeatAssignment), useValue: {} },
+        { provide: getRepositoryToken(OrganizationInvitation), useValue: {} },
+        { provide: UsersService, useValue: {} },
+        { provide: CoursesService, useValue: {} },
+        { provide: MailService, useValue: {} },
+        { provide: appConfig.KEY, useValue: { url: 'https://app.test', name: 'Cohortly' } },
+      ],
+    }).compile();
+    const service = moduleRef.get(OrganizationsService);
+
+    await expect(service.removeSeatPacksByPurchase('p1')).resolves.toBe(2);
+    expect(seatPacks.delete).toHaveBeenCalledWith({ purchaseId: 'p1' });
+  });
+});

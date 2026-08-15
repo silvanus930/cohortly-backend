@@ -210,3 +210,36 @@ describe('EnrollmentsService', () => {
     });
   });
 });
+
+describe('EnrollmentsService refunds', () => {
+  it('cancels active enrollments of a refunded purchase and adjusts course counters', async () => {
+    const enrollments = {
+      find: jest.fn().mockResolvedValue([
+        { id: 'e1', courseId: 'c1', status: EnrollmentStatus.ACTIVE },
+        { id: 'e2', courseId: 'c2', status: EnrollmentStatus.ACTIVE },
+      ]),
+      save: jest.fn((value: object) => Promise.resolve(value)),
+    };
+    const courses = { decrement: jest.fn() };
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        EnrollmentsService,
+        { provide: getRepositoryToken(Enrollment), useValue: enrollments },
+        { provide: getRepositoryToken(Lesson), useValue: {} },
+        { provide: getRepositoryToken(Course), useValue: courses },
+        { provide: CoursesService, useValue: {} },
+        { provide: CohortsService, useValue: {} },
+        { provide: OrganizationsService, useValue: {} },
+        { provide: UsersService, useValue: {} },
+      ],
+    }).compile();
+    const service = moduleRef.get(EnrollmentsService);
+
+    await expect(service.cancelByPurchase('p1')).resolves.toBe(2);
+
+    expect(enrollments.save).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'e1', status: EnrollmentStatus.CANCELLED }),
+    );
+    expect(courses.decrement).toHaveBeenCalledTimes(2);
+  });
+});
