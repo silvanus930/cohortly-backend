@@ -59,3 +59,7 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   verification code, rendered from an SVG template into storage, public
   verification and SVG endpoints, admin revocation and reissue, and a CLI
   that re-renders certificates with the current template.
+- Payments: Stripe Checkout for single courses, bundles and organization seat
+  packs, confirmation after redirect, a signature verified and idempotent
+  webhook that fulfils purchases, and admin refunds that revoke what was
+  granted.

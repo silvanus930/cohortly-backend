@@ -20,6 +20,7 @@ import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { OrganizationsModule } from './organizations/organizations.module';
+import { PaymentsModule } from './payments/payments.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
 import { StorageModule } from './storage/storage.module';
 import { UsersModule } from './users/users.module';
@@ -46,6 +47,7 @@ import { UsersModule } from './users/users.module';
     QuizzesModule,
     AssignmentsModule,
     CertificatesModule,
+    PaymentsModule,
     HealthModule,
   ],
   providers: [
