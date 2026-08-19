@@ -36,6 +36,13 @@ export class User extends BaseEntity {
   @Column({ name: 'last_login_at', type: 'timestamptz', nullable: true })
   lastLoginAt!: Date | null;
 
+  @Index('users_referral_code_unique', { unique: true, where: 'referral_code IS NOT NULL' })
+  @Column({ name: 'referral_code', type: 'varchar', length: 32, nullable: true })
+  referralCode!: string | null;
+
+  @Column({ name: 'referred_by_id', type: 'uuid', nullable: true })
+  referredById!: string | null;
+
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`.trim();
   }

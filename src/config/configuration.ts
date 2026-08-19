@@ -2,6 +2,7 @@ import { registerAs } from '@nestjs/config';
 import { authConfig } from '../auth/auth.config';
 import { mailConfig } from '../mail/mail.config';
 import { paymentsConfig } from '../payments/payments.config';
+import { referralsConfig } from '../referrals/referrals.config';
 import { storageConfig } from '../storage/storage.config';
 import { type NodeEnv } from './env.validation';
 import { parseBoolean, parseInteger, parseList } from './parsers';
@@ -22,6 +23,7 @@ export const databaseConfig = registerAs('database', () => ({
   url: process.env.DATABASE_URL ?? '',
   ssl: parseBoolean(process.env.DATABASE_SSL),
   logging: parseBoolean(process.env.DATABASE_LOGGING),
+  migrationsRun: parseBoolean(process.env.DATABASE_MIGRATIONS_RUN),
 }));
 
 export const configurationFactories = [
@@ -31,4 +33,5 @@ export const configurationFactories = [
   mailConfig,
   storageConfig,
   paymentsConfig,
+  referralsConfig,
 ];

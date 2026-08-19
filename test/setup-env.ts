@@ -11,3 +11,4 @@ process.env.SUPERADMIN_PASSWORD = 'RootPassw0rd';
 process.env.GOOGLE_CLIENT_ID = '';
 process.env.STRIPE_SECRET_KEY = '';
 process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_secret_used_only_by_the_e2e_suite';
+process.env.DATABASE_MIGRATIONS_RUN = 'true';

@@ -17,7 +17,7 @@ import { databaseConfig } from '../config/configuration';
         synchronize: false,
         migrations: [join(__dirname, 'migrations', '*.{ts,js}')],
         migrationsTableName: 'migrations',
-        migrationsRun: false,
+        migrationsRun: database.migrationsRun,
         installExtensions: false,
       }),
     }),

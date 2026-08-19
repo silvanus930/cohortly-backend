@@ -26,6 +26,7 @@ export const envValidationSchema = Joi.object({
     .required(),
   DATABASE_SSL: Joi.boolean().default(false),
   DATABASE_LOGGING: Joi.boolean().default(false),
+  DATABASE_MIGRATIONS_RUN: Joi.boolean().default(false),
 
   JWT_ACCESS_SECRET: Joi.string().min(32).required(),
   JWT_ACCESS_TTL_SECONDS: Joi.number().integer().min(60).default(900),
@@ -71,4 +72,8 @@ export const envValidationSchema = Joi.object({
   PAYMENTS_CURRENCY: Joi.string().length(3).uppercase().default('USD'),
   SEAT_PRICE_CENTS: Joi.number().integer().min(0).default(19900),
   MAX_BUNDLE_SIZE: Joi.number().integer().min(2).max(50).default(10),
+
+  REFERRAL_COMMISSION_RATE_BPS: Joi.number().integer().min(0).max(10000).default(2000),
+  REFERRAL_PAYOUT_THRESHOLD_CENTS: Joi.number().integer().min(0).default(10000),
+  REFERRAL_CODE_LENGTH: Joi.number().integer().min(6).max(16).default(8),
 });
