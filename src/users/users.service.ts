@@ -1,10 +1,11 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThanOrEqual, Repository } from 'typeorm';
+import { IsNull, MoreThanOrEqual, Repository } from 'typeorm';
 import { UserRole, UserStatus } from '../common/enums/user-role.enum';
 import { type Paginated, paginateQuery } from '../common/pagination/pagination';
 import { containsPattern } from '../common/utils/escape-like';
 import { normalizeEmail } from '../common/utils/normalize-email';
+import { generateReferralCode, normalizeReferralCode } from '../common/utils/referral-code';
 import { stripUndefined } from '../common/utils/strip-undefined';
 import { type ListUsersQueryDto } from './dto/list-users.query.dto';
 import { User } from './entities/user.entity';
@@ -82,6 +83,47 @@ export class UsersService {
     return paginateQuery(builder, query);
   }
 
+  findByReferralCode(code: string): Promise<User | null> {
+    return this.users.findOne({ where: { referralCode: normalizeReferralCode(code) } });
+  }
+
+  findByRole(role: UserRole): Promise<User[]> {
+    return this.users.find({ where: { role, status: UserStatus.ACTIVE } });
+  }
+
+  findWithoutReferralCode(limit: number): Promise<User[]> {
+    return this.users.find({
+      where: { referralCode: IsNull() },
+      take: limit,
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  /** Returns the user's referral code, generating a unique one on first use. */
+  async ensureReferralCode(id: string): Promise<string> {
+    const user = await this.findByIdOrFail(id);
+    if (user.referralCode) {
+      return user.referralCode;
+    }
+    user.referralCode = await this.uniqueReferralCode();
+    await this.users.save(user);
+    return user.referralCode;
+  }
+
+  async setReferredBy(id: string, referrerId: string): Promise<void> {
+    await this.users.update({ id }, { referredById: referrerId });
+  }
+
+  private async uniqueReferralCode(): Promise<string> {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const code = generateReferralCode();
+      if (!(await this.users.exists({ where: { referralCode: code } }))) {
+        return code;
+      }
+    }
+    throw new Error('Could not generate a unique referral code');
+  }
+
   async create(input: CreateUserInput): Promise<User> {
     const email = normalizeEmail(input.email);
     const existing = await this.users.exists({ where: { email } });
@@ -100,6 +142,8 @@ export class UsersService {
       avatarUrl: input.avatarUrl ?? null,
       emailVerifiedAt: input.emailVerifiedAt ?? null,
       lastLoginAt: null,
+      referralCode: await this.uniqueReferralCode(),
+      referredById: null,
     });
     return this.users.save(user);
   }
