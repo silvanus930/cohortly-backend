@@ -20,6 +20,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { OneTimeCodePurpose } from './entities/one-time-code.entity';
 import { GoogleAuthService } from './google-auth.service';
 import { type AuthTokens, type RequestContext } from './interfaces/jwt-payload.interface';
+import { ReferralsService } from '../referrals/referrals.service';
 import { OtpService } from './otp.service';
 import { PasswordService } from './password.service';
 import { TokenService } from './token.service';
@@ -42,17 +43,20 @@ export class AuthService {
     private readonly otpService: OtpService,
     private readonly googleAuthService: GoogleAuthService,
     private readonly mailService: MailService,
+    private readonly referralsService: ReferralsService,
     @Inject(authConfig.KEY) private readonly config: ConfigType<typeof authConfig>,
   ) {}
 
   async register(dto: RegisterDto, context: RequestContext): Promise<AuthResponse> {
     this.passwordService.assertStrong(dto.password);
+    const referrer = await this.referralsService.resolveReferrer(dto.referralCode);
     const user = await this.usersService.create({
       email: dto.email,
       firstName: dto.firstName,
       lastName: dto.lastName,
       passwordHash: await this.passwordService.hash(dto.password),
     });
+    await this.referralsService.attach(user, referrer);
     this.mailService.sendWelcome(user).catch((error: unknown) => {
       this.logger.warn(`Welcome email failed for ${user.email}: ${String(error)}`);
     });
@@ -144,6 +148,10 @@ export class AuthService {
         avatarUrl: profile.avatarUrl,
         emailVerifiedAt: profile.emailVerified ? new Date() : null,
       });
+      await this.referralsService.attach(
+        user,
+        await this.referralsService.resolveReferrer(dto.referralCode),
+      );
     }
     await this.usersService.markLogin(user.id);
     return this.buildResponse(user, context);

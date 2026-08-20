@@ -8,6 +8,7 @@ import { authConfig } from './auth.config';
 import { AuthService } from './auth.service';
 import { OneTimeCodePurpose } from './entities/one-time-code.entity';
 import { GoogleAuthService } from './google-auth.service';
+import { ReferralsService } from '../referrals/referrals.service';
 import { OtpService } from './otp.service';
 import { PasswordService } from './password.service';
 import { TokenService } from './token.service';
@@ -52,6 +53,10 @@ export const mocks = {
   otpService: { issue: jest.fn(), verifyAndConsume: jest.fn() },
   googleAuthService: { verifyIdToken: jest.fn() },
   mailService: { sendWelcome: jest.fn(), sendPasswordResetCode: jest.fn() },
+  referralsService: {
+    resolveReferrer: jest.fn().mockResolvedValue(null),
+    attach: jest.fn().mockResolvedValue(null),
+  },
 };
 
 export async function buildAuthService(): Promise<AuthService> {
@@ -68,6 +73,7 @@ export async function buildAuthService(): Promise<AuthService> {
       { provide: OtpService, useValue: mocks.otpService },
       { provide: GoogleAuthService, useValue: mocks.googleAuthService },
       { provide: MailService, useValue: mocks.mailService },
+      { provide: ReferralsService, useValue: mocks.referralsService },
       { provide: authConfig.KEY, useValue: { otpTtlMinutes: 10 } },
     ],
   }).compile();

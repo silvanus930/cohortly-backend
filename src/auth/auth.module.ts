@@ -3,6 +3,7 @@ import { type ConfigType } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ReferralsModule } from '../referrals/referrals.module';
 import { UsersModule } from '../users/users.module';
 import { authConfig } from './auth.config';
 import { AuthController } from './auth.controller';
@@ -19,6 +20,7 @@ import { TokenService } from './token.service';
 @Module({
   imports: [
     UsersModule,
+    ReferralsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     TypeOrmModule.forFeature([RefreshToken, OneTimeCode]),
     JwtModule.registerAsync({

@@ -26,7 +26,8 @@
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
     "prepare": "husky",
-    "certificates:reissue": "ts-node -r tsconfig-paths/register scripts/reissue-certificates.ts"
+    "certificates:reissue": "ts-node -r tsconfig-paths/register scripts/reissue-certificates.ts",
+    "referrals:backfill": "ts-node -r tsconfig-paths/register scripts/backfill-referral-codes.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1125.0",

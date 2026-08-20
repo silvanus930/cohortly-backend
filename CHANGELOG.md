@@ -63,3 +63,8 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   packs, confirmation after redirect, a signature verified and idempotent
   webhook that fulfils purchases, and admin refunds that revoke what was
   granted.
+- Referrals: a referral code and link for every user, relationships attached
+  at signup, commissions recorded on paid purchases and reversed on refunds,
+  per partner rates and payout thresholds, payout cycles with superadmin
+  alerts when the threshold is reached, admin mark paid, partner ledgers and
+  a backfill script for referral codes.

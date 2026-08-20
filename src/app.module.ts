@@ -22,6 +22,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { PaymentsModule } from './payments/payments.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
+import { ReferralsModule } from './referrals/referrals.module';
 import { StorageModule } from './storage/storage.module';
 import { UsersModule } from './users/users.module';
 
@@ -48,6 +49,7 @@ import { UsersModule } from './users/users.module';
     AssignmentsModule,
     CertificatesModule,
     PaymentsModule,
+    ReferralsModule,
     HealthModule,
   ],
   providers: [
