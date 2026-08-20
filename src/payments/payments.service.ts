@@ -30,6 +30,7 @@ import { paymentsConfig } from './payments.config';
 import { StripeClientService } from './stripe-client.service';
 
 export type PurchasePaidHandler = (purchase: Purchase) => Promise<void>;
+export type PurchaseRefundedHandler = (purchase: Purchase) => Promise<void>;
 
 export interface WebhookResult {
   received: true;
@@ -62,6 +63,13 @@ export class PaymentsService {
     private readonly organizationsService: OrganizationsService,
     @Inject(paymentsConfig.KEY) private readonly config: ConfigType<typeof paymentsConfig>,
   ) {}
+
+  private readonly refundHandlers: PurchaseRefundedHandler[] = [];
+
+  /** Referrals reverse commissions when a purchase is refunded. */
+  registerRefundHandler(handler: PurchaseRefundedHandler): void {
+    this.refundHandlers.push(handler);
+  }
 
   /** Referrals hook in here to record commissions once money has changed hands. */
   registerPaidHandler(handler: PurchasePaidHandler): void {
@@ -287,6 +295,13 @@ export class PaymentsService {
       await this.organizationsService.removeSeatPacksByPurchase(saved.id);
     } else {
       await this.enrollmentsService.cancelByPurchase(saved.id);
+    }
+    for (const handler of this.refundHandlers) {
+      try {
+        await handler(saved);
+      } catch (error) {
+        this.logger.error(`Refund handler failed for purchase ${saved.id}: ${String(error)}`);
+      }
     }
     return saved;
   }
