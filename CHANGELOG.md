@@ -68,3 +68,6 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   per partner rates and payout thresholds, payout cycles with superadmin
   alerts when the threshold is reached, admin mark paid, partner ledgers and
   a backfill script for referral codes.
+- Admin analytics: platform overview, revenue and enrollment time series with
+  day, week or month buckets, top courses and cohort completion rates, plus
+  instructor performance summaries with an admin controlled reset window.

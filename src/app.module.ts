@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { type ConfigType } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AnalyticsModule } from './analytics/analytics.module';
 import { AssignmentsModule } from './assignments/assignments.module';
 import { AuthModule } from './auth/auth.module';
 import { CertificatesModule } from './certificates/certificates.module';
@@ -50,6 +51,7 @@ import { UsersModule } from './users/users.module';
     CertificatesModule,
     PaymentsModule,
     ReferralsModule,
+    AnalyticsModule,
     HealthModule,
   ],
   providers: [
