@@ -25,6 +25,6 @@ export function buildDataSourceOptions(): DataSourceOptions {
   };
 }
 
-export const AppDataSource = new DataSource(buildDataSourceOptions());
+const AppDataSource = new DataSource(buildDataSourceOptions());
 
 export default AppDataSource;
