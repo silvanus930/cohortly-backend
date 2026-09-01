@@ -5,6 +5,10 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.1.0] - 2026-09-03
+
 ### Added
 
 - Project scaffold with NestJS, TypeScript strict mode, ESLint flat config,
@@ -71,3 +75,11 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Admin analytics: platform overview, revenue and enrollment time series with
   day, week or month buckets, top courses and cohort completion rates, plus
   instructor performance summaries with an admin controlled reset window.
+- Development seed script with demo accounts, courses, cohorts, an
+  organization and a partner; TypeORM CLI data source fixed for migrations.
+- GitHub Actions workflow running lint, format check, build, unit and e2e
+  tests, and a PM2 ecosystem file for cluster mode deployments.
+- Documentation: README with setup, architecture, environment table and API
+  overview, an architecture note, ADRs for authentication, payments and the
+  referral payout model, and a contributing guide.
+
