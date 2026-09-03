@@ -185,6 +185,9 @@ describe('Assignments (e2e)', () => {
       .set(bearer(learnerA.accessToken))
       .expect(200);
     expect(inbox.body.data[0]).toMatchObject({ type: 'GRADE_POSTED', data: { passed: true } });
+    expect((inbox.body.data as { type: string }[]).map((n) => n.type)).toContain(
+      'CERTIFICATE_ISSUED',
+    );
     const mail = [...app.get(MailService).outbox]
       .reverse()
       .find((m) => m.to === learnerA.user.email);
@@ -194,7 +197,7 @@ describe('Assignments (e2e)', () => {
       .get('/api/v1/notifications/unread-count')
       .set(bearer(learnerA.accessToken))
       .expect(200);
-    expect(unread.body.data.unread).toBe(1);
+    expect(unread.body.data.unread).toBe(2);
     await api(app)
       .post('/api/v1/notifications/read-all')
       .set(bearer(learnerA.accessToken))
